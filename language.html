@@ -1,0 +1,972 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vibe - Language</title>
+
+<link rel="stylesheet" href="player.css">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+  color: white;
+  background: #080808;
+}
+
+body {
+  min-height: 100vh;
+  padding-bottom: 40px;
+  background:
+    linear-gradient(rgba(0,0,0,.3), rgba(0,0,0,.88)),
+    url("file_000000006c748211a247756d7731b785.png");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  height: 58px;
+  padding: 7px 10px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #111;
+  background: rgba(255,255,255,.94);
+  backdrop-filter: blur(15px);
+}
+
+.topbar button {
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #111;
+  font-size: 25px;
+  cursor: pointer;
+}
+
+.topTitle {
+  flex: 1;
+  height: 38px;
+  padding: 0 15px;
+  display: flex;
+  align-items: center;
+  border-radius: 11px;
+  background: #ededed;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.genreHeader {
+  min-height: 220px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background: linear-gradient(transparent, rgba(0,0,0,.9));
+}
+
+.genreHeader h1 {
+  margin: 0;
+  font-size: 45px;
+  font-weight: 800;
+}
+
+.genreHeader p {
+  margin: 7px 0 0;
+  color: rgba(255,255,255,.58);
+  font-size: 15px;
+}
+
+#loading, #noSongs {
+  padding: 30px;
+  text-align: center;
+  color: rgba(255,255,255,.65);
+}
+
+#noSongs {
+  display: none;
+}
+
+#songs {
+  padding: 0 12px 80px;
+}
+
+.songCard {
+  width: 100%;
+  min-height: 78px;
+  margin: 9px 0;
+  padding: 9px;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 15px;
+  background: rgba(10,10,10,.68);
+  backdrop-filter: blur(12px);
+  cursor: pointer;
+  transition: transform .18s, background .18s;
+}
+
+.songCard:active {
+  transform: scale(.975);
+}
+
+.songCover {
+  width: 62px;
+  height: 62px;
+  flex-shrink: 0;
+  object-fit: cover;
+  border-radius: 11px;
+  background: #202020;
+}
+
+.songInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.songTitle {
+  font-size: 17px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.songArtist {
+  margin-top: 5px;
+  font-size: 13px;
+  color: rgba(255,255,255,.52);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cardPlay {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: white;
+  color: black;
+  font-size: 16px;
+}
+
+/* Full-screen player */
+#player {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  padding: 18px 22px 25px;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(75,75,75,.42), transparent 42%),
+    linear-gradient(180deg, #202020 0%, #111111 48%, #070707 100%);
+  overflow-y: auto;
+  transform: translateY(100%);
+  opacity: 0;
+  visibility: hidden;
+  transition: transform .38s cubic-bezier(.22,1,.36,1),
+              opacity .25s ease,
+              visibility .38s;
+}
+
+#player.show {
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+}
+
+.playerTop {
+  width: 100%;
+  min-height: 45px;
+  display: grid;
+  grid-template-columns: 45px 1fr 45px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.playerTop span {
+  text-align: center;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,.55);
+}
+
+.playerTop button {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,.08);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.bigCover {
+  width: min(82vw, 360px);
+  height: min(82vw, 360px);
+  margin: 20px auto 27px;
+  flex-shrink: 0;
+}
+
+#playerCover {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  border-radius: 22px;
+  background: #181818;
+  box-shadow: 0 25px 60px rgba(0,0,0,.65);
+}
+
+.playerInfo {
+  width: 100%;
+  margin-bottom: 19px;
+}
+
+#playerTitle {
+  margin: 0;
+  font-size: 25px;
+  font-weight: 700;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-left: 280px;
+}
+
+#playerArtist {
+  margin: 7px 0 0;
+  font-size: 15px;
+  color: rgba(255,255,255,.52);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-left: 280px;
+}
+
+.pro, .pro1 {
+  width: 100%;
+}
+
+#progress {
+  display: block;
+  width: 38%;
+  height: 5px;
+  margin: 0;
+  padding: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 0;
+  outline: none;
+  border-radius: 10px;
+  background: #555;
+  cursor: pointer;
+}
+
+#progress::-webkit-slider-thumb,
+#volume::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border: 0;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+}
+
+#progress::-moz-range-thumb,
+#volume::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: 0;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+}
+
+.time {
+  width: 38%;
+  margin-top: 7px;
+  display: flex;
+  justify-content: space-between;
+  color: rgba(255,255,255,.43);
+  font-size: 11px;
+}
+
+.controls {
+  width: 100%;
+  margin: 25px 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 35px;
+}
+
+.control {
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.control:active, .playButton:active {
+  transform: scale(.85);
+}
+
+.playButton {
+  width: 67px;
+  height: 67px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: white;
+  color: #080808;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(0,0,0,.45);
+}
+
+.volume {
+  width: 100%;
+  margin-top: 10px;
+  padding-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-left: -290px;
+}
+
+.volume > span {
+  width: 25px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,.65);
+  font-size: 17px;
+}
+
+#volume {
+  flex: 1;
+  width: 100%;
+  max-width: 250px;
+  height: 5px;
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 10px;
+  background: #555;
+  cursor: pointer;
+}
+
+#audio {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  #player {
+    padding: 14px 18px 22px;
+  }
+
+  .bigCover {
+    width: 76vw;
+    height: 76vw;
+    margin: 15px auto 23px;
+  }
+
+  #playerTitle {
+    font-size: 23px;
+  }
+
+  .controls {
+    gap: 27px;
+    margin: 22px 0;
+  }
+
+  .playButton {
+    width: 63px;
+    height: 63px;
+  }
+
+  .control {
+    width: 45px;
+    height: 45px;
+  }
+  
+#playerTitle {
+  margin: 0;
+  font-size: 25px;
+  font-weight: 700;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  
+}
+
+#playerArtist {
+  margin: 7px 0 0;
+  font-size: 15px;
+  color: rgba(255,255,255,.52);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+}
+
+.pro, .pro1 {
+  width: 100%;
+}
+
+#progress {
+  display: block;
+  width: 100%;
+  height: 5px;
+  margin: 0;
+  padding: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 0;
+  outline: none;
+  border-radius: 10px;
+  background: #555;
+  cursor: pointer;
+}
+
+#progress::-webkit-slider-thumb,
+#volume::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border: 0;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+}
+
+#progress::-moz-range-thumb,
+#volume::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: 0;
+  border-radius: 50%;
+  background: white;
+  cursor: pointer;
+}
+
+.time {
+  width: 100%;
+  margin-top: 7px;
+  display: flex;
+  justify-content: space-between;
+  color: rgba(255,255,255,.43);
+  font-size: 11px;
+}
+
+.controls {
+  width: 100%;
+  margin: 25px 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 35px;
+}
+
+.control {
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.control:active, .playButton:active {
+  transform: scale(.85);
+}
+
+.playButton {
+  width: 67px;
+  height: 67px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: white;
+  color: #080808;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(0,0,0,.45);
+}
+
+.volume {
+  width: 100%;
+  margin-top: 10px;
+  padding-top: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-left: 0px;
+}
+
+.volume > span {
+  width: 25px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,.65);
+  font-size: 17px;
+}
+
+#volume {
+  flex: 1;
+  width: 100%;
+  max-width: 250px;
+  height: 5px;
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 10px;
+  background: #555;
+  cursor: pointer;
+}
+  
+}
+
+@media (max-height: 700px) {
+  .bigCover {
+    width: min(55vw, 260px);
+    height: min(55vw, 260px);
+    margin: 8px auto 15px;
+  }
+
+  #playerTitle {
+    font-size: 21px;
+  }
+
+  .playerInfo {
+    margin-bottom: 12px;
+  }
+
+  .controls {
+    margin: 14px 0;
+  }
+}
+
+@media (max-height: 600px) {
+  .bigCover {
+    width: min(48vw, 210px);
+    height: min(48vw, 210px);
+  }
+
+  .playerTop {
+    min-height: 38px;
+  }
+
+  .controls {
+    margin: 10px 0;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+  <button onclick="goBack()" aria-label="Go back">‹</button>
+  <div class="topTitle" id="topTitle">Vibe</div>
+  <button onclick="loadSongs()" aria-label="Refresh songs">↻</button>
+</header>
+
+<section class="genreHeader">
+  <h1 id="languageHeading">Telugu</h1>
+  <p id="languageSubtitle">Songs for your vibe</p>
+</section>
+
+<div id="loading">Loading songs...</div>
+<div id="noSongs">No songs found for this language.</div>
+<div id="songs"></div>
+
+<!-- FULL-SCREEN PLAYER -->
+<div id="player">
+
+  <div class="playerTop">
+    <button onclick="closePlayer()" aria-label="Close player">
+            <svg width="22" height="22" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" stroke-width="2.2"
+        stroke-linecap="round" stroke-linejoin="round">
+
+        <path d="M6 9l6 6 6-6"></path>
+
+            </svg>
+    </button>
+
+    <span>NOW PLAYING</span>
+
+    <button onclick="closePlayer()" aria-label="Close player">×</button>
+  </div>
+
+  <div class="bigCover">
+    <img id="playerCover" src="" alt="Album cover">
+  </div>
+
+  <div class="playerInfo">
+    <h2 id="playerTitle">Song Title</h2>
+    <p id="playerArtist">Artist</p>
+  </div>
+
+  <div class="pro">
+    <input type="range" id="progress" min="0" max="100" value="0">
+    <div class="time">
+      <span id="currentTime">0:00</span>
+      <span id="totalTime">0:00</span>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="control" onclick="prevSong()" aria-label="Previous song">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M6 5h2v14H6zM20 6v12L9 12z"/>
+      </svg>
+    </button>
+
+    <button class="playButton" id="playButton"
+            onclick="togglePlay()" aria-label="Play or pause">
+      <svg id="playIcon" width="30" height="30"
+           viewBox="0 0 24 24" fill="currentColor">
+        <path d="M8 5v14l11-7z"/>
+      </svg>
+    </button>
+
+    <button class="control" onclick="nextSong()" aria-label="Next song">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M16 5h2v14h-2zM4 6v12l11-6z"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="pro1">
+    <div class="volume">
+      <span>−</span>
+      <input type="range" id="volume" min="0" max="1"
+             step="0.01" value="0.7">
+      <span>+</span>
+    </div>
+  </div>
+
+  <audio id="audio"></audio>
+</div>
+<script src="settings.js"></script>
+<script>
+const SUPABASE_URL =
+  "https://ljmqyigdesrftfphiglw.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_AMFZFIODLrc7YIF0SUAh0w_ZlQuONWn";
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+const params = new URLSearchParams(window.location.search);
+const language = params.get("lang") || "Telugu";
+
+document.getElementById("languageHeading").textContent = language;
+document.getElementById("topTitle").textContent = language + " Songs";
+document.title = "Vibe - " + language;
+
+const songsContainer = document.getElementById("songs");
+const loading = document.getElementById("loading");
+const noSongs = document.getElementById("noSongs");
+
+const player = document.getElementById("player");
+const audio = document.getElementById("audio");
+const playerCover = document.getElementById("playerCover");
+const playerTitle = document.getElementById("playerTitle");
+const playerArtist = document.getElementById("playerArtist");
+const playIcon = document.getElementById("playIcon");
+const progress = document.getElementById("progress");
+const volume = document.getElementById("volume");
+const currentTime = document.getElementById("currentTime");
+const totalTime = document.getElementById("totalTime");
+
+let allSongs = [];
+let currentIndex = -1;
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
+}
+
+function formatTime(seconds) {
+  if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
+
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+
+  return mins + ":" + String(secs).padStart(2, "0");
+}
+
+function updateProgressBackground() {
+  const percent = Number(progress.value) || 0;
+
+  progress.style.background =
+    `linear-gradient(to right, white ${percent}%, #555 ${percent}%)`;
+}
+
+function updateVolumeBackground() {
+  const percent = Number(volume.value) * 100;
+
+  volume.style.background =
+    `linear-gradient(to right, white ${percent}%, #555 ${percent}%)`;
+}
+
+function updatePlayIcon(isPlaying) {
+  playIcon.innerHTML = isPlaying
+    ? '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>'
+    : '<path d="M8 5v14l11-7z"/>';
+}
+
+function createSongCard(song, index) {
+  const card = document.createElement("div");
+  card.className = "songCard";
+
+  const cover = song.cover_url || "";
+
+  card.innerHTML = `
+    <img class="songCover"
+         src="${escapeHTML(cover)}"
+         alt=""
+         loading="lazy">
+
+    <div class="songInfo">
+      <div class="songTitle">${escapeHTML(song.title)}</div>
+      <div class="songArtist">${escapeHTML(song.artist)}</div>
+    </div>
+
+    <div class="cardPlay">▶</div>
+  `;
+
+  card.addEventListener("click", () => openSong(index));
+
+  return card;
+}
+
+async function loadSongs() {
+  loading.style.display = "block";
+  noSongs.style.display = "none";
+  songsContainer.innerHTML = "";
+
+  const { data, error } = await supabaseClient
+    .from("songs")
+    .select("*")
+    .eq("language", language)
+    .order("created_at", { ascending: false });
+
+  loading.style.display = "none";
+
+  if (error) {
+    noSongs.textContent = "Could not load songs. Please refresh.";
+    noSongs.style.display = "block";
+    console.error(error);
+    return;
+  }
+
+  allSongs = data || [];
+
+  if (allSongs.length === 0) {
+    noSongs.textContent = "No songs found for " + language + ".";
+    noSongs.style.display = "block";
+    return;
+  }
+
+  noSongs.style.display = "none";
+
+  allSongs.forEach((song, index) => {
+    songsContainer.appendChild(createSongCard(song, index));
+  });
+}
+
+async function openSong(index) {
+  if (!allSongs.length) return;
+
+  currentIndex = (index + allSongs.length) % allSongs.length;
+  const song = allSongs[currentIndex];
+
+  playerTitle.textContent = song.title || "Unknown Song";
+  playerArtist.textContent = song.artist || "Unknown Artist";
+  playerCover.src = song.cover_url || "";
+  player.classList.add("show");
+
+  audio.src = song.audio_url;
+  audio.volume = Number(volume.value);
+  progress.value = 0;
+  currentTime.textContent = "0:00";
+  totalTime.textContent = "0:00";
+  updateProgressBackground();
+
+  saveRecentlyPlayed(song);
+  updatePlayIcon(false);
+
+  try {
+    await audio.play();
+  } catch (error) {
+    console.error("Playback failed:", error);
+  }
+}
+
+function togglePlay() {
+  if (!audio.src && allSongs.length) {
+    openSong(0);
+    return;
+  }
+
+  if (audio.paused) {
+    audio.play().catch(error => console.error(error));
+  } else {
+    audio.pause();
+  }
+}
+
+function nextSong() {
+  if (allSongs.length) {
+    openSong(currentIndex < 0 ? 0 : currentIndex + 1);
+  }
+}
+
+function prevSong() {
+  if (allSongs.length) {
+    if (audio.currentTime > 3) {
+      audio.currentTime = 0;
+    } else {
+      openSong(currentIndex <= 0 ? allSongs.length - 1 : currentIndex - 1);
+    }
+  }
+}
+
+function closePlayer() {
+  player.classList.remove("show");
+  audio.pause();
+}
+
+function goBack() {
+  if (window.history.length > 1) {
+    window.history.back();
+  } else {
+    window.location.href = "index.html";
+  }
+}
+
+function saveRecentlyPlayed(song) {
+  try {
+    let recent = JSON.parse(localStorage.getItem("vibeRecentlyPlayed") || "[]");
+
+    recent = recent.filter(item => String(item.id) !== String(song.id));
+    recent.unshift(song);
+
+    localStorage.setItem(
+      "vibeRecentlyPlayed",
+      JSON.stringify(recent.slice(0, 10))
+    );
+  } catch (error) {
+    console.error("Could not save recently played:", error);
+  }
+}
+
+audio.addEventListener("play", () => updatePlayIcon(true));
+audio.addEventListener("pause", () => updatePlayIcon(false));
+
+audio.addEventListener("loadedmetadata", () => {
+  totalTime.textContent = formatTime(audio.duration);
+});
+
+audio.addEventListener("timeupdate", () => {
+  if (Number.isFinite(audio.duration) && audio.duration > 0) {
+    progress.value = (audio.currentTime / audio.duration) * 100;
+    currentTime.textContent = formatTime(audio.currentTime);
+    updateProgressBackground();
+  }
+});
+
+audio.addEventListener("ended", nextSong);
+
+progress.addEventListener("input", () => {
+  if (Number.isFinite(audio.duration) && audio.duration > 0) {
+    audio.currentTime = (Number(progress.value) / 100) * audio.duration;
+    updateProgressBackground();
+  }
+});
+
+volume.addEventListener("input", () => {
+  audio.volume = Number(volume.value);
+  updateVolumeBackground();
+});
+
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape") closePlayer();
+});
+
+updateProgressBackground();
+updateVolumeBackground();
+loadSongs();
+</script>
+
+</body>
+</html>

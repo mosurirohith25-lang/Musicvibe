@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vibe</title>
+
+<link rel="stylesheet" href="player.css">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+
+  <button class="backBtn" onclick="goBack()" aria-label="Go back">
+    <svg width="24" height="24" viewBox="0 0 24 24"
+      fill="none" stroke="currentColor" stroke-width="2.2"
+      stroke-linecap="round" stroke-linejoin="round">
+      <path d="M15 18l-6-6 6-6"></path>
+    </svg>
+  </button>
+
+  <div class="topTitle">
+    Vibe - <span id="topGenre">Pop</span>
+  </div>
+
+  <button class="refreshBtn" onclick="loadSongs()" aria-label="Refresh">
+    <svg width="22" height="22" viewBox="0 0 24 24"
+      fill="none" stroke="currentColor" stroke-width="2"
+      stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20 11a8.1 8.1 0 0 0-15.5-2"></path>
+      <path d="M4 5v4h4"></path>
+      <path d="M4 13a8.1 8.1 0 0 0 15.5 2"></path>
+      <path d="M20 19v-4h-4"></path>
+    </svg>
+  </button>
+
+  <button class="menuBtn" aria-label="Menu">
+    <svg width="22" height="22" viewBox="0 0 24 24"
+      fill="currentColor">
+      <circle cx="12" cy="5" r="1.6"></circle>
+      <circle cx="12" cy="12" r="1.6"></circle>
+      <circle cx="12" cy="19" r="1.6"></circle>
+    </svg>
+  </button>
+
+</div>
+
+
+<!-- GENRE HEADER -->
+<div class="genreHeader">
+  <h1 id="pageTitle">POP</h1>
+  <p id="pageSubtitle">Popular music</p>
+</div>
+
+
+<!-- SONG LIST -->
+<div id="loading">Loading songs...</div>
+
+<div id="songs"></div>
+
+<div id="noSongs">
+  No songs found.
+</div>
+
+
+<!-- FULL SCREEN PLAYER -->
+<div id="player">
+
+  <!-- PLAYER TOP -->
+  <div class="playerTop">
+
+    <button onclick="closePlayer()" aria-label="Close player">
+
+      <svg width="22" height="22" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" stroke-width="2.2"
+        stroke-linecap="round" stroke-linejoin="round">
+
+        <path d="M6 9l6 6 6-6"></path>
+
+      </svg>
+
+    </button>
+
+
+    <span>NOW PLAYING</span>
+
+
+    <button aria-label="More options">
+
+      <svg width="22" height="22" viewBox="0 0 24 24"
+        fill="currentColor">
+
+        <circle cx="12" cy="5" r="1.5"></circle>
+        <circle cx="12" cy="12" r="1.5"></circle>
+        <circle cx="12" cy="19" r="1.5"></circle>
+
+      </svg>
+
+    </button>
+
+  </div>
+
+
+  <!-- ALBUM COVER -->
+  <div class="bigCover">
+
+    <img
+      id="playerCover"
+      src=""
+      alt="Album Cover">
+
+  </div>
+
+<div class="pro">
+  <!-- SONG INFO -->
+  <div class="playerInfo">
+
+    <h2 id="playerTitle">
+      Song Title
+    </h2>
+
+    <p id="playerArtist">
+      Artist
+    </p>
+
+  </div>
+
+
+  <!-- MUSIC PROGRESS -->
+  <input
+    type="range"
+    id="progress"
+    min="0"
+    max="100"
+    value="0"
+    step="0.1"
+    aria-label="Song progress">
+
+
+  <!-- TIME -->
+  <div class="time">
+
+    <span id="currentTime">
+      0:00
+    </span>
+
+    <span id="totalTime">
+      0:00
+    </span>
+
+  </div>
+</div>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+
+
+    <!-- PREVIOUS -->
+    <button
+      class="control"
+      onclick="previousSong()"
+      aria-label="Previous song">
+
+      <svg
+        width="27"
+        height="27"
+        viewBox="0 0 24 24"
+        fill="currentColor">
+
+        <path d="M6 5h2v14H6z"></path>
+
+        <path d="M19 5.5v13L9 12z"></path>
+
+      </svg>
+
+    </button>
+
+
+    <!-- PLAY / PAUSE -->
+    <button
+      id="playButton"
+      class="playButton"
+      onclick="togglePlay()"
+      aria-label="Play">
+
+      <svg
+        id="playIcon"
+        width="25"
+        height="25"
+        viewBox="0 0 24 24"
+        fill="currentColor">
+
+        <path d="M8 5v14l11-7z"></path>
+
+      </svg>
+
+    </button>
+
+
+    <!-- NEXT -->
+    <button
+      class="control"
+      onclick="nextSong()"
+      aria-label="Next song">
+
+      <svg
+        width="28"
+        height="28"
+        viewBox="0 0 24 24"
+        fill="currentColor">
+
+        <path d="M5 5.5v13l10-6.5z"></path>
+
+        <rect
+          x="18"
+          y="5"
+          width="2"
+          height="14"
+          rx="1">
+        </rect>
+
+      </svg>
+
+    </button>
+
+  </div>
+
+
+  <!-- VOLUME -->
+  <div class="pro1">
+  <div class="volume">
+
+    <span id="volumeIcon">
+
+      <svg
+        width="19"
+        height="19"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round">
+
+        <polygon
+          points="11 5 6 9 2 9 2 15 6 15 11 19 11 5">
+        </polygon>
+
+        <path d="M19 9a5 5 0 0 1 0 6"></path>
+
+      </svg>
+
+    </span>
+
+
+    <input
+      type="range"
+      id="volume"
+      min="0"
+      max="1"
+      step="0.01"
+      value="1"
+      aria-label="Volume">
+
+  </div>
+
+
+  <!-- AUDIO -->
+  <audio
+    id="audio"
+    preload="metadata"
+    playsinline>
+  </audio>
+
+</div>
+</div>
+  <script src="settings.js"></script>
+
+<script>
+
+/* ================================
+   SUPABASE
+================================ */
+
+const SUPABASE_URL =
+  "https://hetulenjimniliyjfaqg.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_2cKtROybmRtjyvvtOHT1Jw_N07HkAh2";
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+/* ================================
+   GENRE
+================================ */
+
+const file =
+  window.location.pathname
+    .split("/")
+    .pop()
+    .toLowerCase();
+
+
+const genres = {
+
+  "page.html": "Pop",
+
+  "page1.html": "Rock",
+
+  "page2.html": "Hip-Hop",
+
+  "page3.html": "Mass",
+
+  "page4.html": "Folk",
+
+  "page5.html": "Classical",
+  
+    "page6.html": "Jazz",
+
+    "page7.html": "Weeknd"
+
+
+
+};
+
+
+const genre =
+  genres[file] || "Pop";
+
+
+document.title =
+  "Vibe - " + genre;
+
+
+document.getElementById(
+  "topGenre"
+).textContent = genre;
+
+
+document.getElementById(
+  "pageTitle"
+).textContent =
+  genre.toUpperCase();
+
+
+document.getElementById(
+  "pageSubtitle"
+).textContent =
+  genre + " music";
+
+
+document.getElementById(
+  "noSongs"
+).textContent =
+  "No " + genre + " songs found.";
+
+
+/* ================================
+   VARIABLES
+================================ */
+
+let songs = [];
+
+let currentIndex = -1;
+
+let previousVolume = 1;
+
+
+/* ================================
+   ELEMENTS
+================================ */
+
+const audio =
+  document.getElementById("audio");
+
+const player =
+  document.getElementById("player");
+
+const playerCover =
+  document.getElementById("playerCover");
+
+const playerTitle =
+  document.getElementById("playerTitle");
+
+const playerArtist =
+  document.getElementById("playerArtist");
+
+const playButton =
+  document.getElementById("playButton");
+
+const playIcon =
+  document.getElementById("playIcon");
+
+const progress =
+  document.getElementById("progress");
+
+const currentTime =
+  document.getElementById("currentTime");
+
+const totalTime =
+  document.getElementById("totalTime");
+
+const volume =
+  document.getElementById("volume");
+
+const volumeIcon =
+  document.getElementById("volumeIcon");
+
+
+/* ================================
+   ICONS
+================================ */
+
+const PLAY_ICON = `
+
+<svg
+  width="25"
+  height="25"
+  viewBox="0 0 24 24"
+  fill="currentColor">
+
+  <path d="M8 5v14l11-7z"></path>
+
+</svg>
+
+`;
+
+
+const PAUSE_ICON = `
+
+<svg
+  width="25"
+  height="25"
+  viewBox="0 0 24 24"
+  fill="currentColor">
+
+  <path d="M7 5h4v14H7z"></path>
+
+  <path d="M13 5h4v14h-4z"></path>
+
+</svg>
+
+`;
+
+
+const VOLUME_ICON = `
+
+<svg
+  width="19"
+  height="19"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round">
+
+  <polygon
+    points="11 5 6 9 2 9 2 15 6 15 11 19 11 5">
+  </polygon>
+
+  <path d="M19 9a5 5 0 0 1 0 6"></path>
+
+</svg>
+
+`;
+
+
+const MUTE_ICON = `
+
+<svg
+  width="19"
+  height="19"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round">
+
+  <polygon
+    points="11 5 6 9 2 9 2 15 6 15 11 19 11 5">
+  </polygon>
+
+  <line
+    x1="23"
+    y1="9"
+    x2="17"
+    y2="15">
+  </line>
+
+  <line
+    x1="17"
+    y1="9"
+    x2="23"
+    y2="15">
+  </line>
+
+</svg>
+
+`;
+
+
+/* ================================
+   PLAY ICON
+================================ */
+
+function updatePlayIcon() {
+
+  if (audio.paused) {
+
+    playButton.innerHTML =
+      PLAY_ICON;
+
+    playButton.setAttribute(
+      "aria-label",
+      "Play"
+    );
+
+  } else {
+
+    playButton.innerHTML =
+      PAUSE_ICON;
+
+    playButton.setAttribute(
+      "aria-label",
+      "Pause"
+    );
+
+  }
+
+}
+
+
+/* ================================
+   MUSIC PROGRESS BAR
+================================ */
+
+function updateProgressBar() {
+
+  const percent =
+    Number(progress.value);
+
+  progress.style.background =
+    `linear-gradient(
+      to right,
+      #ffffff 0%,
+      #ffffff ${percent}%,
+      #555555 ${percent}%,
+      #555555 100%
+    )`;
+
+}
+
+
+/* ================================
+   VOLUME BAR
+================================ */
+
+function updateVolumeBar() {
+
+  const percent =
+    Number(volume.value) * 100;
+
+  volume.style.background =
+    `linear-gradient(
+      to right,
+      #ffffff 0%,
+      #ffffff ${percent}%,
+      #555555 ${percent}%,
+      #555555 100%
+    )`;
+
+}
+
+
+/* ================================
+   LOAD SONGS
+================================ */
+
+async function loadSongs() {
+
+  const loading =
+    document.getElementById(
+      "loading"
+    );
+
+  const container =
+    document.getElementById(
+      "songs"
+    );
+
+  const noSongs =
+    document.getElementById(
+      "noSongs"
+    );
+
+
+  const playingId =
+    currentIndex >= 0 &&
+    songs[currentIndex]
+      ? songs[currentIndex].id
+      : null;
+
+
+  loading.style.display =
+    "block";
+
+  noSongs.style.display =
+    "none";
+
+
+  const { data, error } =
+    await supabaseClient
+
+      .from("songs")
+
+      .select("*")
+
+      .eq("genre", genre)
+
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
+
+
+  loading.style.display =
+    "none";
+
+
+  if (error) {
+
+    console.error(
+      "Supabase Error:",
+      error
+    );
+
+    noSongs.textContent =
+      "Unable to load songs. Check Supabase.";
+
+    noSongs.style.display =
+      "block";
+
+    return;
+
+  }
+
+
+  songs = data || [];
+
+  container.innerHTML = "";
+
+
+  if (songs.length === 0) {
+
+    noSongs.style.display =
+      "block";
+
+    return;
+
+  }
+
+
+  noSongs.style.display =
+    "none";
+
+
+  if (playingId !== null) {
+
+    const newIndex =
+      songs.findIndex(
+        song =>
+          song.id === playingId
+      );
+
+    if (newIndex !== -1) {
+
+      currentIndex =
+        newIndex;
+
+    }
+
+  }
+
+
+  songs.forEach(
+    (song, index) => {
+
+      createSongCard(
+        song,
+        index,
+        container
+      );
+
+    }
+  );
+
+}
+
+
+/* ================================
+   SONG CARD
+================================ */
+
+function createSongCard(
+  song,
+  index,
+  container
+) {
+
+  const card =
+    document.createElement("div");
+
+  card.className =
+    "songCard";
+
+
+  card.onclick =
+    function() {
+
+      openSong(index);
+
+    };
+
+
+  const cover =
+    document.createElement("img");
+
+  cover.className =
+    "songCover";
+
+  cover.src =
+    song.cover_url || "";
+
+  cover.alt =
+    song.title;
+
+
+  cover.onerror =
+    function() {
+
+      this.style.background =
+        "#222";
+
+    };
+
+
+  const info =
+    document.createElement("div");
+
+  info.className =
+    "songInfo";
+
+
+  const title =
+    document.createElement("div");
+
+  title.className =
+    "songTitle";
+
+  title.textContent =
+    song.title;
+
+
+  const artist =
+    document.createElement("div");
+
+  artist.className =
+    "songArtist";
+
+  artist.textContent =
+    song.artist;
+
+
+  const play =
+    document.createElement("div");
+
+  play.className =
+    "cardPlay";
+
+  play.innerHTML =
+    PLAY_ICON;
+
+
+  info.appendChild(title);
+
+  info.appendChild(artist);
+
+  card.appendChild(cover);
+
+  card.appendChild(info);
+
+  card.appendChild(play);
+
+  container.appendChild(card);
+
+}
+
+
+/* ================================
+   OPEN SONG
+================================ */
+
+function openSong(index) {
+
+  if (!songs[index])
+    return;
+
+
+  currentIndex =
+    index;
+
+
+  const song =
+    songs[index];
+
+
+  playerCover.src =
+    song.cover_url || "";
+
+
+  playerTitle.textContent =
+    song.title;
+
+
+  playerArtist.textContent =
+    song.artist;
+
+
+  audio.src =
+    song.audio_url;
+
+  audio.load();
+
+
+  progress.value =
+    0;
+
+  currentTime.textContent =
+    "0:00";
+
+  totalTime.textContent =
+    "0:00";
+
+
+  updateProgressBar();
+
+
+  player.classList.add(
+    "show"
+  );
+
+
+  audio.play()
+    .then(function() {
+
+      updatePlayIcon();
+
+      saveRecentlyPlayed(
+        song
+      );
+
+    })
+    .catch(function(error) {
+
+      console.log(
+        "Playback waiting:",
+        error
+      );
+
+      updatePlayIcon();
+
+    });
+
+}
+
+
+/* ================================
+   PLAY / PAUSE
+================================ */
+
+function togglePlay() {
+
+  if (!audio.src)
+    return;
+
+
+  if (audio.paused) {
+
+    audio.play()
+      .then(function() {
+
+        updatePlayIcon();
+
+      })
+      .catch(function(error) {
+
+        console.log(
+          "Playback error:",
+          error
+        );
+
+      });
+
+  } else {
+
+    audio.pause();
+
+  }
+
+}
+
+
+/* ================================
+   NEXT
+================================ */
+
+function nextSong() {
+
+  if (!songs.length)
+    return;
+
+
+  currentIndex =
+    (currentIndex + 1)
+    % songs.length;
+
+
+  openSong(
+    currentIndex
+  );
+
+}
+
+
+/* ================================
+   PREVIOUS
+================================ */
+
+function previousSong() {
+
+  if (!songs.length)
+    return;
+
+
+  if (currentIndex <= 0) {
+
+    currentIndex =
+      songs.length - 1;
+
+  } else {
+
+    currentIndex--;
+
+  }
+
+
+  openSong(
+    currentIndex
+  );
+
+}
+
+
+/* ================================
+   AUDIO EVENTS
+================================ */
+
+audio.addEventListener(
+  "play",
+  function() {
+
+    updatePlayIcon();
+
+  }
+);
+
+
+audio.addEventListener(
+  "pause",
+  function() {
+
+    updatePlayIcon();
+
+  }
+);
+
+
+audio.addEventListener(
+  "ended",
+  function() {
+
+    nextSong();
+
+  }
+);
+
+
+audio.addEventListener(
+  "loadedmetadata",
+  function() {
+
+    totalTime.textContent =
+      formatTime(
+        audio.duration
+      );
+
+  }
+);
+
+
+audio.addEventListener(
+  "timeupdate",
+  function() {
+
+    if (!audio.duration)
+      return;
+
+
+    const percent =
+      (
+        audio.currentTime /
+        audio.duration
+      ) * 100;
+
+
+    progress.value =
+      percent;
+
+
+    currentTime.textContent =
+      formatTime(
+        audio.currentTime
+      );
+
+
+    updateProgressBar();
+
+  }
+);
+
+
+/* ================================
+   PROGRESS INPUT
+================================ */
+
+progress.addEventListener(
+  "input",
+  function() {
+
+    if (!audio.duration)
+      return;
+
+
+    audio.currentTime =
+      (
+        progress.value /
+        100
+      ) * audio.duration;
+
+
+    updateProgressBar();
+
+  }
+);
+
+
+/* ================================
+   VOLUME
+================================ */
+
+volume.addEventListener(
+  "input",
+  function() {
+
+    const value =
+      Number(volume.value);
+
+
+    audio.volume =
+      value;
+
+
+    updateVolumeBar();
+
+
+    if (value > 0) {
+
+      previousVolume =
+        value;
+
+      audio.muted =
+        false;
+
+      volumeIcon.innerHTML =
+        VOLUME_ICON;
+
+    } else {
+
+      audio.muted =
+        true;
+
+      volumeIcon.innerHTML =
+        MUTE_ICON;
+
+    }
+
+  }
+);
+
+
+/* ================================
+   VOLUME ICON
+================================ */
+
+volumeIcon.style.cursor =
+  "pointer";
+
+
+volumeIcon.onclick =
+  function() {
+
+    if (
+      audio.muted ||
+      audio.volume === 0
+    ) {
+
+      audio.muted =
+        false;
+
+
+      const restored =
+        previousVolume > 0
+          ? previousVolume
+          : 1;
+
+
+      audio.volume =
+        restored;
+
+
+      volume.value =
+        restored;
+
+
+      volumeIcon.innerHTML =
+        VOLUME_ICON;
+
+
+      updateVolumeBar();
+
+    } else {
+
+      previousVolume =
+        audio.volume;
+
+
+      audio.muted =
+        true;
+
+
+      volume.value =
+        0;
+
+
+      volumeIcon.innerHTML =
+        MUTE_ICON;
+
+
+      updateVolumeBar();
+
+    }
+
+  };
+
+
+/* ================================
+   DEFAULT VOLUME
+================================ */
+
+audio.volume =
+  1;
+
+volume.value =
+  1;
+
+updateVolumeBar();
+
+updateProgressBar();
+
+
+/* ================================
+   CLOSE PLAYER
+================================ */
+
+function closePlayer() {
+
+  player.classList.remove(
+    "show"
+  );
+
+}
+
+
+/* ================================
+   RECENTLY PLAYED
+================================ */
+
+function saveRecentlyPlayed(
+  song
+) {
+
+  let recent =
+    JSON.parse(
+      localStorage.getItem(
+        "vibeRecentlyPlayed"
+      )
+    ) || [];
+
+
+  recent =
+    recent.filter(
+      item =>
+        item.id !== song.id
+    );
+
+
+  recent.unshift(
+    song
+  );
+
+
+  recent =
+    recent.slice(0, 10);
+
+
+  localStorage.setItem(
+    "vibeRecentlyPlayed",
+    JSON.stringify(recent)
+  );
+
+}
+
+
+/* ================================
+   BACK
+================================ */
+
+function goBack() {
+
+  window.location.href =
+    "Category.html";
+
+}
+
+
+/* ================================
+   TIME FORMAT
+================================ */
+
+function formatTime(seconds) {
+
+  if (
+    !Number.isFinite(seconds)
+  )
+    return "0:00";
+
+
+  const minutes =
+    Math.floor(
+      seconds / 60
+    );
+
+
+  const secondsPart =
+    Math.floor(
+      seconds % 60
+    )
+    .toString()
+    .padStart(
+      2,
+      "0"
+    );
+
+
+  return (
+    minutes +
+    ":" +
+    secondsPart
+  );
+
+}
+
+
+/* ================================
+   REALTIME
+================================ */
+
+supabaseClient
+
+  .channel(
+    "genre-" + genre
+  )
+
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "songs"
+    },
+    function() {
+
+      loadSongs();
+
+    }
+  )
+
+  .subscribe();
+
+
+/* ================================
+   START
+================================ */
+
+loadSongs();
+
+</script>
+
+</body>
+</html>
