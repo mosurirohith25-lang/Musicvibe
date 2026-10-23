@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Notification</title>
+
+  <script src="theme.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Hidden until the login check finishes (no flash) -->
+  <style>html { visibility: hidden; }</style>
+
+  <style>
+    body{
+      background-color:Black ;
+      color:white;
+      height:100vh;
+        -webkit-tap-highlight-color: transparent;
+    }
+    .notification{
+      display:flex;
+      flex-direction:row;
+      justify-content:center;
+      margin-top:20px;
+    }
+     .notification h1{
+      position:relative;
+      font-weight:bold;
+      font-size:25px;
+      color:white;
+    }
+    .notification a{
+      position:absolute;
+      left:320px;
+      text-decoration:none;
+      color:#fb4242;
+      font-size:50px;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .on{
+      background-color:#212121;
+      height:90px;
+      width:60%;
+      margin:40px auto;
+      border-radius:15px;
+      padding:30px;
+      font-weight:bold;
+      font-size:30px;
+      display:flex;
+      align-items:center;
+    }
+
+    .switch{
+      position:relative;
+      width:70px;
+      height:40px;
+      display:inline-block;
+      margin-left:auto;
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    .switch input{
+      display:none;
+    }
+
+    .slider{
+      position:absolute;
+      inset:0;
+      background-color:white;
+      border-radius:40px;
+      cursor:pointer;
+    }
+
+    .slider::before{
+      content:"";
+      position:absolute;
+      width:30px;
+      height:30px;
+      left:5px;
+      top:5px;
+      background-color:#212121;
+      border-radius:50%;
+      transition:0.3s;
+    }
+
+    .switch input:checked + .slider::before{
+      transform:translateX(30px);
+    }
+
+    #notificationStatus{
+      font-size:15px;
+      margin-left:10px;
+    }
+
+    #message{
+      width:60%;
+      margin:-20px auto 0;
+      text-align:center;
+      font-size:14px;
+      color:#9ca3af;
+      min-height:20px;
+    }
+
+    @media (max-width:600px){
+    .notification a{
+      left:20px;
+      font-size:25px;
+      margin-top:10px;
+    }
+    .notification h1{
+      font-size:25px;
+    }
+    .on{
+      font-size:15px;
+      height:70px;
+      width:90%;
+      padding:15px;
+      margin:20px auto;
+    }
+
+    .switch{
+      width:55px;
+      height:32px;
+    }
+
+    .slider::before{
+      width:24px;
+      height:24px;
+      left:4px;
+      top:4px;
+    }
+
+    .switch input:checked + .slider::before{
+      transform:translateX(23px);
+    }
+
+    #notificationStatus{
+      font-size:12px;
+      margin-left:8px;
+    }
+
+    #message{
+      width:90%;
+      margin-top:-5px;
+    }
+  }
+  </style>
+</head>
+
+<body>
+  <div class="notification">
+    <a href="settings1.html">←</a>
+    <h1>Notification</h1>
+  </div>
+
+  <div class="on">
+    <span>Notification</span>
+
+    <label class="switch">
+      <input type="checkbox" id="notificationSwitch">
+      <span class="slider"></span>
+    </label>
+
+    <span id="notificationStatus">OFF</span>
+  </div>
+
+  <p id="message" role="status" aria-live="polite"></p>
+
+  <script>
+    const SUPABASE_URL = "https://ljmqyigdesrftfphiglw.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_AMFZFIODLrc7YIF0SUAh0w_ZlQuONWn";
+    const LOGIN_PAGE = "login.html";
+
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const notificationSwitch = document.getElementById("notificationSwitch");
+    const notificationStatus = document.getElementById("notificationStatus");
+    const message = document.getElementById("message");
+
+    function showState(on) {
+      notificationSwitch.checked = on;
+      notificationStatus.textContent = on ? "ON" : "OFF";
+    }
+
+    /* Check login first, then load the saved setting */
+    (async function init() {
+      let session = null;
+
+      try {
+        const { data } = await supabaseClient.auth.getSession();
+        session = data.session;
+      } catch (e) {
+        console.error(e);
+      }
+
+      if (!session) {
+        window.location.replace(LOGIN_PAGE);
+        return;
+      }
+
+      document.documentElement.style.visibility = "visible";
+
+      const saved = session.user.user_metadata && session.user.user_metadata.notifications;
+
+      /* Only show ON if it was saved ON and the browser still allows it */
+      const allowed = !("Notification" in window) || Notification.permission === "granted";
+      showState(saved === true && allowed);
+    })();
+
+    async function saveSetting(on) {
+      const { error } = await supabaseClient.auth.updateUser({
+        data: { notifications: on }
+      });
+      if (error) throw error;
+    }
+
+    notificationSwitch.addEventListener("change", async function () {
+      const wantOn = this.checked;
+      message.textContent = "";
+
+      try {
+        if (wantOn && "Notification" in window) {
+          let permission = Notification.permission;
+
+          if (permission === "default") {
+            permission = await Notification.requestPermission();
+          }
+
+          if (permission !== "granted") {
+            showState(false);
+            message.textContent = "Notifications are blocked. Allow them for this site in your browser settings, then try again.";
+            await saveSetting(false);
+            return;
+          }
+        }
+
+        showState(wantOn);
+        await saveSetting(wantOn);
+        message.textContent = wantOn ? "Notifications turned on." : "Notifications turned off.";
+      } catch (error) {
+        console.error(error);
+        showState(!wantOn);
+        message.textContent = "Could not save: " + (error.message || "Unknown error");
+      }
+    });
+  </script>
+
+</body>
+
+</html>

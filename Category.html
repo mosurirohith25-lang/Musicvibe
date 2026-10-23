@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+    
+html {
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+body {
+  background: #212121;
+  margin: 0;
+  min-height: 100vh;
+  height: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-bottom: 65px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+      .one{
+        display: flex;
+        gap:100px;
+        margin: 10px;
+        justify-content: center;
+        margin-bottom: 50px;
+        }
+      .one1{
+        display: flex;
+        gap: 100px;
+        margin: 10px;
+        justify-content: center;
+        margin-bottom: 50px;
+      }
+      .one2{
+        display: flex;
+        gap: 100px;
+        margin: 10px;
+        justify-content: center;
+        margin-bottom: 50px;
+      }
+      .one3{
+        display: flex;
+        gap: 100px;
+        margin: 10px;
+        justify-content: center;
+        
+      }
+          .backBtn {
+
+  width: 42px;
+  height: 42px;
+
+  border: 0;
+  outline: 0;
+
+  border-radius: 50%;
+
+  background: transparent;
+
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  transition:
+    background .2s,
+    transform .15s;
+          }
+      #down {
+
+  position: fixed;
+
+  bottom: 0;
+
+  left: 0;
+
+  width: 100%;
+
+  height: 40px;
+
+  box-sizing: border-box;
+
+  background: #212121;
+
+  display: flex;
+
+  flex-direction: row;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  z-index: 1000;
+
+  padding: 5px;
+
+}
+
+
+#home {
+
+  font-size: 35px;
+
+  margin-left: 10px;
+
+  line-height: 1;
+
+  color: silver;
+
+}
+
+
+.pre {
+
+  margin-right: 10px;
+
+}
+
+
+#down h4 {
+
+  margin: 0;
+
+  color: black;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  font-size: 45px;
+
+}
+
+.header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80%;
+  padding: 15px;
+}
+
+.backBtn {
+  position: absolute;
+  left:0px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.title {
+  margin: 0;
+  color: white;
+  font-size: 25px;
+  margin-left: 160px;
+}
+
+      .two h3,
+.three h3,
+.four h3,
+.five h3,
+.six h3,
+.seven h3,
+.eight h3,
+      .nine h3{
+
+  margin: 0;
+
+  text-align: center;
+
+  margin-top: 120px;
+
+  color: white;
+
+  text-shadow:
+    0 1px 4px black,
+    0 1px 8px black;
+}
+      .two{
+        width:150px;
+        height:150px;
+        background-image:url("pop.jpeg");
+        background-size: cover;
+        background-position: center center;
+        border-radius: 10px;
+        
+        }
+      .three{
+        width:150px;
+        height:150px;
+        background-image:url("rock.jpg");
+        background-position: center center;
+        background-size: cover;
+        border-radius: 10px;
+            }
+              .four{
+        width:150px;
+        height:150px;
+        background-image:url("hip hop.jpg");
+       background-position: center center;
+        background-size: cover;
+        border-radius: 10px;
+              }
+            .five{
+        width:150px;
+        height:150px;
+        background-image:url("nn.jpg");
+      background-position: center center;
+        background-size: cover;
+        border-radius: 10px;
+            }
+            .six{
+        width:150px;
+        height:150px;
+        background-image:url("folk.png");
+              background-position: center center;
+        background-size: cover;
+        border-radius: 10px;
+            }
+      .seven{
+        width:150px;
+        height:150px;
+        background-image:url("kathakali-edited.jpg");
+              background-position: center center;
+        background-size: cover;
+        border-radius: 10px;
+      }
+      .eight{
+        width:150px;
+        height:150px;
+        background-image:url("weeknd.jpeg");
+              background-position: center center;
+        background-size: cover;
+        border-radius: 10px;
+      }
+            .nine{
+        width:150px;
+        height:150px;
+        background-image:url("allu.jpg");
+              background-position: center center;
+        background-size: cover;
+        border-radius: 10px;
+            }
+      @media(max-width:600px)
+      {
+            .one{
+        display: flex;
+        gap:30px;
+        margin: 10px;
+      
+        }
+      .one1{
+        display: flex;
+        gap: 30px;
+        margin: 10px;
+      }
+      .one2{
+        display: flex;
+        gap: 30px;
+        margin: 10px;
+      }
+      .one3{
+        display: flex;
+        gap: 30px;
+        margin: 10px;
+      }
+        .title {
+  margin: 0;
+  color: white;
+  font-size: 25px;
+  margin-left: 50px;
+        }
+        
+
+/* Keep category rows inside the screen width */
+.one,
+.one1,
+.one2,
+.one3 {
+  display: flex;
+  justify-content: center;
+  gap: clamp(16px, 5vw, 40px);
+  margin: 10px auto 20px;
+  padding: 0 12px;
+}
+
+/* Prevent category boxes from shrinking */
+.two,
+.three,
+.four,
+.five,
+.six,
+.seven,
+.eight,
+.nine {
+  width: min(40vw, 180px);
+  aspect-ratio: 1 / 1;
+  height: auto;
+  flex-shrink: 0;
+}
+
+/* Keep the bottom navigation visible */
+#down {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 40px;
+  z-index: 1000;
+}
+
+        }
+      
+      </style>
+  </head>
+
+  <body>
+<script src="theme.js"></script>
+<div class="header">
+  <button class="backBtn" onclick="goBack()" aria-label="Go back">
+    <svg width="26" height="26" viewBox="0 0 24 24"
+      fill="none" stroke="currentColor" stroke-width="2.2"
+      stroke-linecap="round" stroke-linejoin="round">
+      <path d="M15 18l-6-6 6-6"></path>
+    </svg>
+  </button>
+
+  <h2 class="title">CATEGORIES</h2>
+</div>
+
+    <div class="one">
+      <div class="two" onclick="music10()">
+        <h3>POP</h3>
+        </div>
+      <div class="three" onclick="music11()">
+        <h3>ROCK</h3>
+        </div>
+      </div>
+    <div class="one1">
+      <div class="four" onclick="music12()">
+        <h3>HIP HOP</h3>
+      </div>
+      <div class="five" onclick="music13()">
+        <h3>MASS</h3>
+      </div>
+      </div>
+    <div class="one2">
+      <div class="six" onclick="music14()">
+        <h3>FOLK</h3>
+      </div>
+      <div class="seven" onclick="music15()">
+        <h3>CLASSICAL</h3>
+      </div>
+    </div>
+        <div class="one3">
+      <div class="eight" onclick="music16()">
+        <h3>WEEKND</h3>
+      </div>
+      <div class="nine" onclick="music17()">
+        <h3>JAZZ</h3>
+      </div>
+          <div id="down">
+
+
+    <a id="home" href="Index.html">
+
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="28"
+        height="28"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round">
+
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+
+        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+
+      </svg>
+
+    </a>
+
+
+    <a href="Category.html">
+
+      <h4 style="color:silver;">
+
+        <svg
+          width="30"
+          height="26"
+          viewBox="0 1 24 23"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg">
+
+          <path
+            d="M5 10H7C9 10 10 9 10 7V5C10 3 9 2 7 2H5C3 2 2 3 2 5V7C2 9 3 10 5 10Z"
+            stroke="silver"
+            stroke-width="1.5"/>
+
+          <path
+            d="M17 10H19C21 10 22 9 22 7V5C22 3 21 2 19 2H17C15 2 14 3 14 5V7C14 9 15 10 17 10Z"
+            stroke="silver"
+            stroke-width="1.5"/>
+
+          <path
+            d="M17 22H19C21 22 22 21 22 19V17C22 15 21 14 19 14H17C15 14 14 15 14 17V19C14 21 15 22 17 22Z"
+            stroke="silver"
+            stroke-width="1.5"/>
+
+          <path
+            d="M5 22H7C9 22 10 21 10 19V17C10 15 9 14 7 14H5C3 14 2 15 2 17V19C2 21 3 22 5 22Z"
+            stroke="silver"
+            stroke-width="1.5"/>
+
+        </svg>
+
+      </h4>
+
+    </a>
+
+
+<a  href="https://naasongs.com.co/">
+    <?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+<svg height="28" width="28" version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+	 viewBox="0 0 512 512"  xml:space="preserve">
+<style type="text/css">
+	.st0{fill:silver;}
+</style>
+<g>
+	<path class="st0" d="M511.587,241.725c-0.087-1.532-0.238-3.048-0.349-4.589c-0.238-3.176-0.493-6.351-0.834-9.496
+		c-0.198-1.778-0.444-3.541-0.675-5.32c-0.381-2.882-0.794-5.756-1.27-8.606c-0.302-1.81-0.628-3.62-0.961-5.415
+		c-0.532-2.81-1.111-5.605-1.731-8.384c-0.397-1.747-0.786-3.493-1.206-5.224c-0.715-2.89-1.493-5.748-2.302-8.59
+		c-0.437-1.556-0.85-3.113-1.318-4.653c-1.032-3.382-2.152-6.717-3.311-10.028c-0.333-0.961-0.627-1.937-0.976-2.89
+		c-1.556-4.287-3.224-8.518-5.002-12.687c-0.365-0.858-0.77-1.684-1.144-2.532c-1.437-3.287-2.921-6.542-4.494-9.75
+		c-0.666-1.365-1.381-2.691-2.072-4.041c-1.365-2.66-2.754-5.312-4.207-7.923c-0.81-1.454-1.644-2.882-2.485-4.32
+		c-1.437-2.469-2.914-4.914-4.43-7.336c-0.898-1.421-1.802-2.835-2.724-4.232c-1.588-2.43-3.232-4.811-4.906-7.178
+		c-0.913-1.302-1.818-2.604-2.755-3.882c-1.873-2.548-3.81-5.041-5.771-7.518c-0.81-1.016-1.589-2.064-2.414-3.065
+		c-5.652-6.914-11.655-13.528-17.99-19.817c-0.945-0.936-1.937-1.833-2.898-2.754c-2.239-2.152-4.494-4.288-6.812-6.359
+		c-1.239-1.112-2.509-2.176-3.772-3.263c-2.112-1.818-4.24-3.613-6.415-5.359c-0.635-0.516-1.246-1.072-1.889-1.58
+		c-0.095-0.048-0.19-0.088-0.286-0.135C370.632,20.519,315.732,0.004,256.004,0.004c-75.114,0-142.678,32.344-189.504,83.871
+		L45,53.436c0,0-18.967,57.068-24.961,103.084c-6.431,15.227-11.417,31.21-14.815,47.763c-0.008,0.047-0.016,0.08-0.024,0.119
+		c-0.794,3.89-1.484,7.813-2.104,11.758c-0.04,0.286-0.103,0.572-0.15,0.858c-0.564,3.732-1.024,7.51-1.438,11.298
+		c-0.047,0.508-0.135,1.009-0.19,1.517c-0.35,3.517-0.596,7.066-0.802,10.623c-0.047,0.794-0.142,1.58-0.182,2.374
+		C0.111,247.187,0,251.578,0,255.992c0,141.392,114.612,256.004,256.004,256.004C397.38,511.996,512,397.384,512,255.992
+		C512,251.205,511.842,246.457,511.587,241.725z M399.468,187.087c19.69,57.663,4.224,127.99,4.224,127.99
+		s-2.81-26.724-12.655-30.947c-42.261,120.987-140.717,122.4-170.26,71.755c33.759,7.043,59.125-42.213,77.409-43.618
+		c18.292-1.398,19.697-14.061-5.621-26.732c-25.319-12.647-49.28,18.324-92.882,19.713c-43.603,1.406-49.224-35.163-33.759-46.413
+		c15.466-11.25,14.061,0,26.725,5.622c4.215-14.06,1.405-36.561,1.405-36.561s29.534-21.103,46.422-28.138
+		c16.871-7.034,16.871-22.508,14.061-30.939c-2.811-8.448-14.061,2.802-14.061,2.802s-30.948-2.802-47.826-2.802
+		c-9.854-11.258-7.027-47.826,14.068-78.782c-35.172,1.413-47.827,14.06-70.334,29.542c-17.817-3.096-34.314-3.628-45.572-3.486
+		c39.768-46.882,99.051-76.718,165.194-76.718c53.313,0,102.156,19.404,139.939,51.471c-6.153-2.406-12.933-3.978-20.388-3.636
+		c47.818,36.568,59.085,139.256,59.085,139.256S420.562,181.458,399.468,187.087z"/>
+</g>
+</svg>
+    </a>
+    <a href="Premium.html" class="pre">
+      
+<?xml version="1.0" encoding="utf-8"?><!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+<svg width="30" height="30" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M21.2501 3C21.4925 3 21.7176 3.11688 21.8574 3.30983L21.9119 3.39706L25.9186 10.9098L25.9615 11.0122L25.9731 11.05L25.9901 11.1273L25.9994 11.2153L25.9973 11.3147L26.0001 11.25C26.0001 11.3551 25.9785 11.4552 25.9394 11.5461L25.9106 11.6057L25.87 11.6723L25.8173 11.7408L14.6 24.7047C14.4999 24.8391 14.3628 24.9277 14.2139 24.9703L14.1559 24.9844L14.0585 24.9979L13.9999 25L13.8993 24.9932L13.8142 24.9771L13.7109 24.9432L13.6852 24.931C13.5949 24.8911 13.5119 24.8316 13.4425 24.7535L2.17081 11.7263L2.1087 11.6387L2.06079 11.5456L2.02611 11.4463L2.00297 11.3152L2.00269 11.1878L2.01755 11.0891L2.02714 11.0499L2.06104 10.9538L2.08838 10.8971L6.08838 3.39706C6.20243 3.18321 6.41149 3.0396 6.64753 3.00704L6.75014 3H21.2501ZM17.9061 12H10.0911L14.0011 22.16L17.9061 12ZM8.48514 12H4.38914L11.7621 20.518L8.48514 12ZM23.6081 12H19.5151L16.2421 20.511L23.6081 12ZM10.0241 4.499H7.19914L3.99814 10.5H8.42314L10.0241 4.499ZM16.4231 4.499H11.5761L9.97514 10.5H18.0231L16.4231 4.499ZM20.8001 4.499H17.9751L19.5761 10.5H23.9991L20.8001 4.499Z" fill="silver"/>
+</svg>
+    </a>
+          </div>
+  </body>
+  <script src="settings.js"></script>
+  <script>
+    function music10() {
+
+      window.location.href =
+        "page.html";
+
+    }
+function music11() {
+
+      window.location.href =
+        "page1.html";
+
+    }
+function music12() {
+
+      window.location.href =
+        "page2.html";
+
+    }
+function music13() {
+
+      window.location.href =
+        "page3.html";
+
+    }
+function music14() {
+
+      window.location.href =
+        "page4.html";
+
+    }
+function music15() {
+
+      window.location.href =
+        "page5.html";
+
+    }
+function music16() {
+
+      window.location.href =
+        "page7.html";
+
+    }
+function music17() {
+
+      window.location.href =
+        "page6.html";
+
+    }
+    function goBack(){
+      window.location.href="Index.html";
+    }
+
+
+  </script>
+</html>

@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Profile</title>
+
+  <script src="theme.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Hidden until the login check finishes (no flash) -->
+  <style>html { visibility: hidden; }</style>
+
+  <style>
+    body {
+      background-color: black;
+      color: white;
+      height: 700px;
+      margin: 0;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .arrow {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      margin-top: 5px;
+    }
+
+    .arrow a {
+      color: #e73c3c;
+      font-size: 20px;
+      position: absolute;
+      left: 480px;
+      text-decoration: none;
+      background: transparent;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .arrow h1 {
+      font-size: 25px;
+    }
+
+    .container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .email,
+    .password,
+    .picture {
+      background-color: #212121;
+      border: none;
+      width: 20%;
+      height: 40px;
+      font-size: 21px;
+      border-radius: 15px;
+      padding: 20px;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+
+    #profileFile {
+      display: none;
+    }
+
+    .picture label {
+      cursor: pointer;
+    }
+
+    .imge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .guna {
+      display: block;
+      width: 50%;
+      height: 200px;
+      border-radius: 15px;
+      object-fit: cover;
+      margin: 20px auto;
+    }
+
+    .syam {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      position: absolute;
+      top: 60px;
+      background-color: #2a2a2a;
+    }
+
+    .email input,
+    .password input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: white;
+      font-size: 18px;
+      font-weight: normal;
+      padding: 5px 0;
+    }
+
+    .password input[readonly] {
+      color: #9ca3af;
+    }
+
+    #status {
+      min-height: 20px;
+      margin: 10px 20px 0;
+      text-align: center;
+      font-size: 14px;
+      color: #D1D5DB;
+      overflow-wrap: anywhere;
+    }
+
+    button {
+      height: 40px;
+      width: 400px;
+      background-color: #212121;
+      border-radius: 15px;
+      border: none;
+      color: #fb4242;
+      margin: 20px auto 60px;
+      transition: 0.3s;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    button:disabled {
+      opacity: .6;
+      cursor: wait;
+    }
+
+    button:active {
+      background-color: #fb4242;
+      color: black;
+      box-shadow: 0px 2px 4px #444040;
+      transform: scale(0.97);
+    }
+
+    label {
+      text-decoration: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    @media (max-width: 600px) {
+
+      body {
+        background-color: black;
+        color: white;
+        height: 700px;
+        margin: 0;
+      }
+
+      .arrow {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        margin-top: 5px;
+      }
+
+      .arrow a {
+        color: #e73c3c;
+        font-size: 25px;
+        position: absolute;
+        left: 20px;
+        text-decoration: none;
+        background: transparent;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .arrow h1 {
+        font-size: 25px;
+      }
+
+      .container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+      }
+
+      .email,
+      .password,
+      .picture {
+        background-color: #212121;
+        border: none;
+        width: 80%;
+        height: 30px;
+        font-size: 15px;
+        border-radius: 15px;
+        padding: 20px;
+        font-weight: bold;
+        margin-top: 15px;
+      }
+
+      .imge {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+      }
+
+      .guna {
+        display: block;
+        width: 90%;
+        height: 200px;
+        border-radius: 15px;
+        object-fit: cover;
+        margin: 20px auto;
+      }
+
+      .syam {
+        width: 105px;
+        height: 105px;
+        border-radius: 50%;
+        object-fit: cover;
+        position: absolute;
+        top: 70px;
+      }
+
+      button {
+        width: 80%;
+        max-width: 500px;
+      }
+
+    }
+  </style>
+
+</head>
+<body>
+
+  <div class="arrow">
+    <a href="settings1.html">←</a>
+    <h1>Profile</h1>
+  </div>
+
+  <div class="imge">
+    <img class="guna" src="IMG-20260929-WA0037.jpg">
+
+    <img class="syam"
+         src="profile.jpg"
+         id="profileImage"
+         alt="Profile picture">
+  </div>
+
+  <div class="container">
+
+    <div class="email">
+      <span>Name</span><br>
+      <input type="text" id="name" placeholder="Your name">
+    </div>
+
+    <div class="password">
+      <span>Email</span>
+      <input type="text" id="email" readonly>
+    </div>
+
+    <div class="picture">
+
+      <label for="profileFile">
+        Profile picture
+      </label>
+
+      <input type="file"
+             accept="image/*"
+             id="profileFile">
+
+    </div>
+
+    <br>
+
+  </div>
+
+  <p id="status" role="status" aria-live="polite"></p>
+
+  <center>
+    <button id="saveBtn">Save Changes</button>
+  </center>
+
+  <script>
+    const SUPABASE_URL = "https://ljmqyigdesrftfphiglw.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_AMFZFIODLrc7YIF0SUAh0w_ZlQuONWn";
+    const BUCKET = "music vibe2";
+    const LOGIN_PAGE = "login.html";
+
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const profileFile  = document.getElementById("profileFile");
+    const profileImage = document.getElementById("profileImage");
+    const nameInput    = document.getElementById("name");
+    const emailInput   = document.getElementById("email");
+    const statusText   = document.getElementById("status");
+    const saveBtn      = document.getElementById("saveBtn");
+
+    let user = null;
+    let selectedFile = null;
+    let previewUrl = null;
+
+    async function getAvatarUrl(path) {
+      const signed = await supabaseClient.storage.from(BUCKET).createSignedUrl(path, 3600);
+      if (signed.data && signed.data.signedUrl) return signed.data.signedUrl;
+
+      const pub = supabaseClient.storage.from(BUCKET).getPublicUrl(path);
+      return pub.data ? pub.data.publicUrl : null;
+    }
+
+    /* Check login first, then fill in the page */
+    (async function init() {
+      let session = null;
+
+      try {
+        const { data } = await supabaseClient.auth.getSession();
+        session = data.session;
+      } catch (e) {
+        console.error(e);
+      }
+
+      if (!session) {
+        window.location.replace(LOGIN_PAGE);
+        return;
+      }
+
+      user = session.user;
+      document.documentElement.style.visibility = "visible";
+
+      const meta = user.user_metadata || {};
+
+      emailInput.value = user.email || "";
+      nameInput.value  = meta.full_name || (user.email ? user.email.split("@")[0] : "");
+
+      if (meta.avatar_path) {
+        const url = await getAvatarUrl(meta.avatar_path);
+        if (url) profileImage.src = url;
+      }
+    })();
+
+    /* Preview the chosen picture */
+    profileFile.addEventListener("change", function () {
+      const file = this.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith("image/")) {
+        statusText.textContent = "Please choose an image file.";
+        this.value = "";
+        selectedFile = null;
+        return;
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        statusText.textContent = "Please choose an image smaller than 5 MB.";
+        this.value = "";
+        selectedFile = null;
+        return;
+      }
+
+      selectedFile = file;
+
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      previewUrl = URL.createObjectURL(file);
+      profileImage.src = previewUrl;
+
+      statusText.textContent = "Picture selected. Press Save Changes.";
+    });
+
+    /* Save name + picture to the account */
+    saveBtn.addEventListener("click", async () => {
+      if (!user) return;
+
+      saveBtn.disabled = true;
+      statusText.textContent = "Saving…";
+
+      try {
+        const updates = { full_name: nameInput.value.trim() };
+
+        if (selectedFile) {
+          const extension = (selectedFile.name.split(".").pop() || "jpg")
+            .toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
+
+          const objectPath = "profiles/" + user.id + "/avatar." + extension;
+
+          const { error } = await supabaseClient.storage.from(BUCKET).upload(objectPath, selectedFile, {
+            upsert: true,
+            contentType: selectedFile.type,
+            cacheControl: "0"
+          });
+          if (error) throw error;
+
+          updates.avatar_path = objectPath;
+        }
+
+        const { error: updateError } = await supabaseClient.auth.updateUser({ data: updates });
+        if (updateError) throw updateError;
+
+        selectedFile = null;
+        profileFile.value = "";
+        statusText.textContent = "Saved!";
+      } catch (error) {
+        console.error("Save failed:", error);
+        statusText.textContent = "Save failed: " + (error.message || "Unknown error");
+      }
+
+      saveBtn.disabled = false;
+    });
+  </script>
+
+</body>
+
+</html>

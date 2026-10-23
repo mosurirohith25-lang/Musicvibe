@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>About</title>
+  <style>
+    body{
+      background-color:black;
+      height:100vh;
+      color:white;
+        -webkit-tap-highlight-color: transparent;
+    }
+    .about{
+      display:flex;
+      flex-direction:row;
+      align-items:center;
+      justify-content:center;
+    }
+    .about h1{
+      position:relative;
+      font-weight:bold;
+      font-size:25px;
+    }
+    .about a{
+      position:absolute;
+      left:70px;
+      text-decoration:none;
+      color:#fb4242;
+      font-size:50px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .logo{
+      width:200px;
+      height:200px;
+      border-radius:20px;
+      position:relative;
+      margin-top:90px;
+      left:70px;
+      object-fit:contain;
+    }
+    .logo1{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      font-size:40px;
+      gap:10px;
+      margin-top:80px;
+    }
+    .logo h2{
+      margin:0;
+    }
+    #red{
+      color:#fb4242;
+      font-size:30px;
+      font-weight:bold;
+    }
+    #green{
+      font-size:50px;
+      font-weight:bold;
+    }
+    #pink{
+   font-size:20px;
+    }
+    .logo2{
+      display:flex;
+      justify-content:center;
+      gap:90px;
+      margin-top:0;
+      position:absolute;
+      left:0px;
+    }
+    .logo3{
+      position:relative;
+    }
+
+    .line{
+      position:absolute;
+      top:300px;
+      left:5%;
+      width:90%;
+      border:0;
+      border-top:4px solid #444;
+      margin:80px auto;
+    }
+    .line1{
+      position:absolute;
+      top:550px;
+      left:5%;
+      width:90%;
+      border:0;
+      border-top:4px solid #444;
+      margin:80px auto;
+    }
+    .app{
+      position:absolute;
+      top:470px;
+      left:100px;
+    }
+    .app h1{
+      font-size:50px;
+      margin-top:5px;
+    }
+    .app p{
+      font-size:30px;
+    }
+    @media (max-width:600px){
+      .about a{
+        left:20px;
+        font-size:25px;
+        margin-top:10px;
+      }
+      .about h1{
+        font-size:25px;
+      }
+      .logo{
+        width:100px;
+        height:100px;
+        margin-top:20px;
+        left:20px;
+      }
+      .logo1{
+        margin-top:20px;
+      }
+      #red{
+        font-size:15px;
+      }
+      #green{
+        font-size:20px;
+      }
+      #pink{
+        font-size:10px;
+      }
+      .logo2{
+        gap:30px;
+      }
+      .line{
+        top:55px;
+        border:1px solid #444;
+      }
+      .line1{
+        top:250px;
+        border:1px solid #444;
+      }
+      .app{
+        top:200px;
+        left:25px;
+      }
+      .app h1{
+        font-size:25px;
+        margin-top:20px;
+      }
+      .app p{
+        font-size:15px;
+        margin
+      }
+    }
+
+  </style>
+</head>
+<script src="theme.js"></script>
+
+<body>
+  <div class="about">
+    <a href="settings1.html">←</a>
+    <h1>About</h1>
+  </div>
+
+  <div class="logo3">
+    <div class="logo2">
+      <img src="logo.png" class="logo">
+      <div class="logo1">
+        <span id="green">Music Vibe</span>
+        <span id="red">Feel every beat</span>
+        <span id="pink">version 1.0.0</span>
+      </div>
+    </div>
+
+    <hr class="line">
+  </div>
+  <div class="app">
+  <h1>About the app</h1>
+  <p>Music vibe is your personal music player, designed to make listening to your favourite songs simple and enjoyable</p>
+  </div>
+  <hr class="line1">
+</body>
+
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Profile - Music Vibe</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    /* Hidden until the login check finishes (no flash before redirect) */
+    html { visibility: hidden; }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 70% 20%, #18204A, #0A0F1A 55%);
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+    .profile {
+      width: min(440px, 100%);
+      min-height: 460px;
+      padding: 36px 24px 24px;
+      background: #111827;
+      border: 1.5px solid #26344D;
+      border-radius: 20px;
+      position: relative;
+      text-align: center;
+      box-shadow: 0 12px 36px rgba(0,0,0,.25);
+    }
+    .avatar-wrap { position: relative; width: 110px; margin: 0 auto 24px; }
+    .image {
+      width: 100px; height: 100px; border-radius: 50%; object-fit: cover;
+      border: 2px solid #26344D; background: #0A0F1A;
+    }
+    .cam {
+      position: absolute; right: 0; bottom: 0; width: 32px; height: 32px;
+      border-radius: 50%; border: 2px solid #b6b6b681; background: silver;
+      color: white; cursor: pointer; font-size: 18px;
+    }
+    .para { font-size: 25px; font-weight: bold; margin: 14px 0; }
+    .description { line-height: 1.5; color: #D1D5DB; margin: 0 auto; }
+    .status { min-height: 24px; margin: 14px 0 8px; font-size: 14px; color: #D1D5DB; overflow-wrap: anywhere; }
+    .continue, .skip {
+      width: 100%; min-height: 44px; border: none; border-radius: 20px;
+      cursor: pointer; font-size: 15px;
+    }
+    .continue { margin-top: 10px; background: #2563EB; color: white; }
+    .continue:disabled { opacity: .65; cursor: wait; }
+    .skip { margin-top: 10px; color: white; background: transparent; }
+    .continue:active, .skip:active { transform: scale(.98); }
+    #photoInput { display: none; }
+  </style>
+</head>
+<script src="theme.js"></script>
+<body>
+  <main class="profile">
+    <div class="avatar-wrap">
+      <img id="profilePreview" src="profile.jpg" alt="Profile picture preview" class="image">
+      <button type="button" class="cam" id="choosePhoto" aria-label="Choose profile picture"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="20" viewBox="0 0 33 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-camera"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></button>
+    </div>
+    <input id="photoInput" type="file" accept="image/*">
+    <p class="para">Add your profile picture</p>
+    <p class="description">Make it yours! You can always<br>change it later in Settings.</p>
+    <p id="status" class="status" role="status" aria-live="polite"></p>
+    <button type="button" id="continueButton" class="continue">Continue</button>
+    <button type="button" id="skipButton" class="skip">Skip for now</button>
+  </main>
+
+  <script>
+    const SUPABASE_URL = "https://ljmqyigdesrftfphiglw.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_AMFZFIODLrc7YIF0SUAh0w_ZlQuONWn";
+    const BUCKET = "music vibe2";
+    const HOME_PAGE = "Index.html";
+    const LOGIN_PAGE = "login.html";
+
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const photoInput = document.getElementById("photoInput");
+    const preview = document.getElementById("profilePreview");
+    const status = document.getElementById("status");
+    const continueButton = document.getElementById("continueButton");
+    let selectedFile = null;
+    let previewUrl = null;
+    let user = null;
+
+    /* Check login first. Only show the page if the user is signed in. */
+    (async function init() {
+      let session = null;
+
+      try {
+        const { data } = await supabaseClient.auth.getSession();
+        session = data.session;
+      } catch (e) {
+        console.error(e);
+      }
+
+      if (!session) {
+        window.location.replace(LOGIN_PAGE);
+        return;
+      }
+
+      user = session.user;
+      document.documentElement.style.visibility = "visible";
+
+      const path = user.user_metadata && user.user_metadata.avatar_path;
+      if (path) {
+        const url = await getAvatarUrl(path);
+        if (url) preview.src = url;
+      }
+    })();
+
+    async function getAvatarUrl(path) {
+      const signed = await supabaseClient.storage.from(BUCKET).createSignedUrl(path, 3600);
+      if (signed.data && signed.data.signedUrl) return signed.data.signedUrl;
+
+      const pub = supabaseClient.storage.from(BUCKET).getPublicUrl(path);
+      return pub.data ? pub.data.publicUrl : null;
+    }
+
+    document.getElementById("choosePhoto").addEventListener("click", () => photoInput.click());
+
+    photoInput.addEventListener("change", () => {
+      const file = photoInput.files && photoInput.files[0];
+      if (!file) return;
+      if (!file.type.startsWith("image/")) {
+        status.textContent = "Please choose an image file.";
+        photoInput.value = "";
+        selectedFile = null;
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        status.textContent = "Please choose an image smaller than 5 MB.";
+        photoInput.value = "";
+        selectedFile = null;
+        return;
+      }
+      selectedFile = file;
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      previewUrl = URL.createObjectURL(file);
+      preview.src = previewUrl;
+      status.textContent = "Picture selected. Press Continue to upload it.";
+    });
+
+    continueButton.addEventListener("click", async () => {
+      if (!user) return;
+
+      if (!selectedFile) {
+        status.textContent = "Choose a profile picture first, or select Skip for now.";
+        return;
+      }
+
+      continueButton.disabled = true;
+      status.textContent = "Uploading your picture…";
+
+      try {
+        const extension = (selectedFile.name.split(".").pop() || "jpg")
+          .toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
+
+        const objectPath = "profiles/" + user.id + "/avatar." + extension;
+
+        const { error } = await supabaseClient.storage.from(BUCKET).upload(objectPath, selectedFile, {
+          upsert: true,
+          contentType: selectedFile.type,
+          cacheControl: "0"
+        });
+        if (error) throw error;
+
+        /* Save the path on the user's account so it follows them to any device */
+        const { error: updateError } = await supabaseClient.auth.updateUser({
+          data: { avatar_path: objectPath }
+        });
+        if (updateError) throw updateError;
+
+        status.textContent = "Picture saved. Opening Vibe…";
+        window.location.replace(HOME_PAGE);
+      } catch (error) {
+        console.error("Profile image upload failed:", error);
+        status.textContent = "Upload failed: " + (error.message || "Unknown error");
+        continueButton.disabled = false;
+      }
+    });
+
+    document.getElementById("skipButton").addEventListener("click", () => {
+      window.location.replace(HOME_PAGE);
+    });
+  </script>
+</body>
+</html>

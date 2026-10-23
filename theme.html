@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Theme</title>
+
+  <script src="theme.js"></script>
+
+  <style>
+  body{
+    background-color:black;
+    min-height:100vh;
+    color:white;
+      -webkit-tap-highlight-color: transparent;
+  }
+  .theme{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-top:20px;
+    position:relative;
+  }
+  .theme a{
+    color:#FB4242;
+    font-size:50px;
+    text-decoration:none;
+    position:absolute;
+    left:320px;
+    background:transparent;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .theme h1{
+    color:white;
+    font-weight:bold;
+    margin:0;
+    font-size:25px;
+  }
+  .dark{
+    background-color:#212121;
+    margin:40px auto;
+    width:60%;
+    border-radius:25px;
+    height:200px;
+    padding:30px;
+    font-size:30px;
+    font-weight:bold;
+  }
+  .light{
+    font-size:20px;
+    font-weight:normal;
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+  }
+  .light input{
+    width:17px;
+    height:17px;
+    accent-color:#fb4242;
+  }
+  .light label{
+    display:flex;
+    flex-direction:row;
+    gap:20px;
+    cursor:pointer;
+  }
+  @media (max-width:600px){
+    .theme a{
+      left:20px;
+      font-size:25px;
+    }
+    .theme h1{
+      font-size:25px;
+    }
+    .dark{
+      font-size:20px;
+      height:150px;
+      width:70%;
+      padding:30px;
+      margin:20px auto;
+    }
+  }
+  </style>
+</head>
+
+<body>
+  <div class="theme">
+    <a href="settings1.html">←</a>
+    <h1>Theme</h1>
+  </div>
+  <div class="dark">
+    <span>Appearance</span>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 -2 24 24"><title>color</title><path fill="currentColor" d="M17.5 12a1.5 1.5 0 0 1-1.5-1.5A1.5 1.5 0 0 1 17.5 9a1.5 1.5 0 0 1 1.5 1.5a1.5 1.5 0 0 1-1.5 1.5m-3-4A1.5 1.5 0 0 1 13 6.5A1.5 1.5 0 0 1 14.5 5A1.5 1.5 0 0 1 16 6.5A1.5 1.5 0 0 1 14.5 8m-5 0A1.5 1.5 0 0 1 8 6.5A1.5 1.5 0 0 1 9.5 5A1.5 1.5 0 0 1 11 6.5A1.5 1.5 0 0 1 9.5 8m-3 4A1.5 1.5 0 0 1 5 10.5A1.5 1.5 0 0 1 6.5 9A1.5 1.5 0 0 1 8 10.5A1.5 1.5 0 0 1 6.5 12M12 3a9 9 0 0 0-9 9a9 9 0 0 0 9 9a1.5 1.5 0 0 0 1.5-1.5c0-.39-.15-.74-.39-1c-.23-.27-.38-.62-.38-1a1.5 1.5 0 0 1 1.5-1.5H16a5 5 0 0 0 5-5c0-4.42-4.03-8-9-8"/></svg><br><br>
+
+    <div class="light">
+      <label>
+        <input type="radio" name="theme" value="system">
+        system default
+      </label>
+
+      <label>
+        <input type="radio" name="theme" value="dark">
+        Dark
+      </label>
+
+      <label>
+        <input type="radio" name="theme" value="light">
+        Light
+      </label>
+    </div>
+  </div>
+
+  <script>
+    var radios = document.querySelectorAll('input[name="theme"]');
+
+    /* Show the saved choice */
+    radios.forEach(function (radio) {
+      radio.checked = (radio.value === window.getVibeTheme());
+
+      /* Apply and save when changed */
+      radio.addEventListener("change", function () {
+        if (radio.checked) window.setVibeTheme(radio.value);
+      });
+    });
+  </script>
+
+</body>
+
+</html>

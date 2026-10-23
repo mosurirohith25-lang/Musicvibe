@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Music vibe - login</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body {
+      background-image: url("login.jpg");
+      background-size: cover;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 90vh;
+      font-family: Arial, sans-serif;
+    }
+
+    .login-box {
+      width: 75%;
+      max-width: 340px;
+      padding: 20px;
+      border-radius: 35px;
+      border: 1px solid white;
+      margin: auto;
+      box-shadow: 4px 3px 20px white;
+    }
+
+    .logo {
+      margin-top: 0;
+      font-size: 20px;
+      font-style: italic;
+      color: white;
+      text-align: center;
+    }
+
+    .log {
+      font-size: 15px;
+      margin-left: 25px;
+      margin-top: 25px;
+      color: white;
+    }
+
+    .json {
+      width: 259px;
+      max-width: 100%;
+      height: 28px;
+      backdrop-filter: blur(8px);
+      outline: none;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 25px;
+      color: white;
+      font-size: 18px;
+      padding: 5px;
+    }
+
+    .json::placeholder { color: rgba(255, 255, 255, 0.7); }
+
+    .son {
+      width: 270px;
+      max-width: 100%;
+      height: 35px;
+      border-radius: 15px;
+      background: linear-gradient(90deg, #00FFFF, #0080FF, #8000FF, #FF00FF);
+      border: none;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .son:disabled { opacity: .6; cursor: wait; }
+
+    button:hover:active { background: #0080FF; }
+
+    hr { width: 50%; height: 0; }
+
+    .hr { display: flex; justify-content: space-between; }
+
+    #msg {
+      min-height: 18px;
+      margin: 8px 0 0;
+      text-align: center;
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="login-box">
+
+    <center><h2 class="logo">𝄞 Music vibe</h2></center>
+
+    <div class="log">
+      <h3>Login</h3>
+    </div>
+
+    <center><input type="email" id="email" placeholder="👤 enter email" class="json" autocomplete="email"></center>
+    <br>
+    <center><input type="password" id="password" placeholder="🔒 enter password" class="json" autocomplete="current-password"></center>
+    <br>
+    <center><button class="son" id="mainBtn" onclick="submitForm()">Login</button></center>
+
+    <p id="msg" role="status" aria-live="polite"></p>
+
+    <div class="hr">
+      <hr><br><span>&nbsp;or&nbsp;</span><br><hr>
+    </div>
+    <br>
+    <center><button class="son" onclick="googleLogin()">continue with Google</button></center>
+
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://ljmqyigdesrftfphiglw.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_AMFZFIODLrc7YIF0SUAh0w_ZlQuONWn";
+
+    const HOME_PAGE = "Index.html";
+    const PROFILE_PAGE = "profile-image.html";
+
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const msg = document.getElementById("msg");
+    const mainBtn = document.getElementById("mainBtn");
+
+    /* Photo already set -> home, otherwise ask for a photo */
+    function routeAfterLogin(user) {
+      const hasPhoto = user && user.user_metadata && user.user_metadata.avatar_path;
+      window.location.replace(hasPhoto ? HOME_PAGE : PROFILE_PAGE);
+    }
+
+    async function submitForm() {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+
+      if (!email || !password) {
+        msg.textContent = "Enter your email and password.";
+        return;
+      }
+
+      mainBtn.disabled = true;
+      msg.textContent = "Please wait…";
+
+      try {
+        /* 1. Try to log in */
+        const signIn = await supabaseClient.auth.signInWithPassword({ email, password });
+
+        if (!signIn.error && signIn.data.session) {
+          routeAfterLogin(signIn.data.user);
+          return;
+        }
+
+        const message = (signIn.error && signIn.error.message || "").toLowerCase();
+
+        if (message.includes("email not confirmed")) {
+          msg.textContent = "Email not confirmed. Turn off 'Confirm email' in Supabase (Authentication > Providers > Email).";
+          mainBtn.disabled = false;
+          return;
+        }
+
+        if (!message.includes("invalid login")) {
+          msg.textContent = (signIn.error && signIn.error.message) || "Something went wrong.";
+          mainBtn.disabled = false;
+          return;
+        }
+
+        /* 2. Not found (or wrong password): try to create the account */
+        const signUp = await supabaseClient.auth.signUp({ email, password });
+
+        if (signUp.error) {
+          const m = signUp.error.message.toLowerCase();
+          msg.textContent = m.includes("already registered")
+            ? "Wrong password."
+            : signUp.error.message;
+          mainBtn.disabled = false;
+          return;
+        }
+
+        /* Existing email: Supabase returns a user with no identities */
+        const identities = signUp.data.user && signUp.data.user.identities;
+        if (identities && identities.length === 0) {
+          msg.textContent = "Wrong password.";
+          mainBtn.disabled = false;
+          return;
+        }
+
+        if (signUp.data.session) {
+          routeAfterLogin(signUp.data.user);
+          return;
+        }
+
+        msg.textContent = "Email confirmation is ON in Supabase. Turn off 'Confirm email' under Authentication > Providers > Email.";
+      } catch (error) {
+        msg.textContent = error.message || "Something went wrong.";
+      }
+
+      mainBtn.disabled = false;
+    }
+
+    async function googleLogin() {
+      msg.textContent = "Opening Google…";
+
+      const { error } = await supabaseClient.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: window.location.origin + window.location.pathname }
+      });
+
+      if (error) msg.textContent = error.message;
+    }
+
+    passwordInput.addEventListener("keydown", e => {
+      if (e.key === "Enter") submitForm();
+    });
+
+    /* Already signed in (also handles the return from Google) */
+    supabaseClient.auth.getSession().then(({ data }) => {
+      if (data.session) routeAfterLogin(data.session.user);
+    });
+  </script>
+</body>
+
+</html>
